@@ -1,7 +1,7 @@
 package com.booking.room.exception;
 
 import com.google.common.base.Throwables;
-import jakarta.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -29,8 +29,10 @@ public class RoomReservationExceptionHandler {
     @ExceptionHandler(RoomReservationNotFound.class)
     @ResponseStatus(value= HttpStatus.NOT_FOUND)
     public ResponseEntity<Map<String, Object>> apiExceptionNotFound(HttpServletRequest req, RuntimeException exception){
-        LOG.error("Not found " + exception.getMessage());
-        return createResponseBody(req, exception, HttpStatus.NOT_FOUND);
+        //LOG.error("Not found " + exception.getMessage());
+        ResponseEntity responseEntity = createResponseBody(req, exception, HttpStatus.NOT_FOUND);
+        LOG.error(responseEntity.getBody().toString());
+        return responseEntity;
     }
 
     private ResponseEntity<Map<String,Object>> createResponseBody(HttpServletRequest req, RuntimeException exception, HttpStatus httpStatus) {

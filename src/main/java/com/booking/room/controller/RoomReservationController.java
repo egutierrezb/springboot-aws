@@ -9,6 +9,8 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -27,6 +29,8 @@ public class RoomReservationController {
 
     @Autowired
     RoomReservationService roomReservationService;
+
+    private static final Logger LOG = LoggerFactory.getLogger(RoomReservationController.class);
 
     @GetMapping("/test")
     public ModelAndView getStringTest() {
@@ -75,6 +79,7 @@ public class RoomReservationController {
     @PostMapping("/rooms")
     public ResponseEntity<String> feedDatabase() throws RuntimeException {
         roomReservationService.feedDatabase();
+        LOG.info("DB feeded sucessfully {}", 200);
         return new ResponseEntity<>("All elements stored in db!",HttpStatus.OK);
     }
 
@@ -93,6 +98,7 @@ public class RoomReservationController {
        if(roomList.isEmpty()) {
            throw new RoomReservationNotFound("No rooms available!");
        }
+       LOG.info("Get all room sucessfull {}", 200);
        return new ResponseEntity<>(roomList, HttpStatus.OK);
     }
 

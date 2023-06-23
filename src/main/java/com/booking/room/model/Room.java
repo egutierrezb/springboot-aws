@@ -1,15 +1,16 @@
 package com.booking.room.model;
 
-import jakarta.persistence.Table;
-import jakarta.validation.constraints.*;
+import javax.persistence.Table;
+import javax.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.stereotype.Component;
 
 //Instead of using javax we need to use jakarta
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
+//for java 17
+import javax.persistence.Entity;
+import javax.persistence.Id;
 
 
 @Data

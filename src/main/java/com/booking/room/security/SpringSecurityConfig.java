@@ -103,7 +103,12 @@ public class SpringSecurityConfig {
         http.csrf().disable()
                 // dont authenticate this particular request
                 // with the second requestMatches we are only requesting authentication for PUT /api/v1/rooms
-                .authorizeRequests().requestMatchers("/authenticate").permitAll().requestMatchers(HttpMethod.PUT, "/api/v1/rooms").authenticated().and().
+                //.authorizeRequests().requestMatchers("/authenticate").permitAll().requestMatchers(HttpMethod.PUT, "/api/v1/rooms").authenticated().and().
+                .authorizeRequests()
+                .antMatchers("/authenticate")
+                .permitAll()
+                .antMatchers(HttpMethod.PUT, "/api/v1/rooms")
+                .authenticated().and().
                 // all other requests need to be authenticated
                         //anyRequest().authenticated().and().
                 // make sure we use stateless session; session won't be used to

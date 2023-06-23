@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="WARN">
+
+    <Appenders>
+        <Console name="ConsoleAppender" target="SYSTEM_OUT" follow="true">
+            <JsonLayout complete="false" compact="true" eventEol="true" properties="true"  >
+                <KeyValuePair key="appName" value="RoomReservation" />
+                <KeyValuePair key="version" value="release1.0" />
+            </JsonLayout>
+        </Console>
+
+        <File name="FileAppender" fileName="./room-logging-dev.log">
+            <JsonLayout complete="false" compact="true" eventEol="true" properties="true"  >
+                <KeyValuePair key="appName" value="RoomReservation" />
+                <KeyValuePair key="version" value="release1.0" />
+            </JsonLayout>
+        </File>
+    </Appenders>
+    <Loggers>
+        <Root level="info">
+            <AppenderRef ref="ConsoleAppender" />
+            <AppenderRef ref="FileAppender" />
+        </Root>
+    </Loggers>
+</Configuration>

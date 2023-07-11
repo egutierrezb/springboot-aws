@@ -1,7 +1,10 @@
 package com.booking.room.controller;
 
 import com.booking.room.exception.RoomReservationNotFound;
+import com.booking.room.mail.EmailService;
+import com.booking.room.model.MailObject;
 import com.booking.room.model.Room;
+import com.booking.room.service.RoomMessageProducer;
 import com.booking.room.service.RoomReservationService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -15,13 +18,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.ui.Model;
+import org.springframework.ui.ModelMap;
+import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
-import java.util.List;
+import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
+import java.util.*;
 
-@RequestMapping("/api/v1")
+@RequestMapping("/api/v1/hosting")
 @RestController
+//This is v1 for room reservation controller
 public class RoomReservationController {
 
     @Autowired
@@ -30,15 +38,24 @@ public class RoomReservationController {
     @Autowired
     RoomReservationService roomReservationService;
 
+    private RoomMessageProducer roomMessageProducer;
+
+    public RoomReservationController(RoomMessageProducer roomMessageProducer) {
+        this.roomMessageProducer = roomMessageProducer;
+    }
+
     private static final Logger LOG = LoggerFactory.getLogger(RoomReservationController.class);
+
 
     @GetMapping("/test")
     public ModelAndView getStringTest() {
-        ModelAndView modelAndView = new ModelAndView("home");
+        ModelAndView modelAndView = new ModelAndView();
         room = roomReservationService.getStringTest();
         modelAndView.addObject("room",room);
+        modelAndView.setViewName("index");
         return modelAndView;
     }
+
     @Operation(summary = "Reserve a single room")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "A single room was reserved",
@@ -51,6 +68,8 @@ public class RoomReservationController {
     @PostMapping("/reservations")
     public ResponseEntity<String> saveRoom(@RequestBody Room room) throws RuntimeException {
         roomReservationService.saveRoom(room);
+        LOG.info("Pending on sending email for notification in adding a new reservation");
+        roomMessageProducer.sendMessage(room);
         return new ResponseEntity<>("Stored in db!",HttpStatus.OK);
     }
 

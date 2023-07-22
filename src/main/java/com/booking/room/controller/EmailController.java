@@ -11,8 +11,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.mail.MessagingException;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -120,6 +122,31 @@ public class EmailController {
                 mailObject.getText(),
                 attachmentPath
         );
+
+        return "redirect:/mail";
+    }
+
+    @RequestMapping(value = "/sendHtml", method = RequestMethod.POST)
+    public String createHtmlMail(Model model,
+                                 @RequestBody @Valid MailObject mailObject,
+                                 Errors errors) throws IOException, MessagingException, Exception {
+        if (errors.hasErrors()) {
+            return "mail/send";
+        }
+
+        Map<String, Object> templateModel = new HashMap<>();
+        templateModel.put("recipientName", mailObject.getRecipientName());
+        templateModel.put("text", mailObject.getText());
+        templateModel.put("senderName", mailObject.getSenderName());
+
+        if (mailObject.getTemplateEngine().equalsIgnoreCase("thymeleaf")) {
+            emailService.sendMessageUsingThymeleafTemplate(
+                    mailObject.getTo(),
+                    mailObject.getSubject(),
+                    templateModel);
+        } else {
+            throw new Exception("Invalid template");
+        }
 
         return "redirect:/mail";
     }

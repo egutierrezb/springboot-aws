@@ -3,7 +3,6 @@ package com.booking.room.mail;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.S3Object;
 import com.amazonaws.services.s3.model.S3ObjectInputStream;
-import com.booking.room.controller.RoomReservationController;
 import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,14 +26,12 @@ import java.io.IOException;
 import java.util.Map;
 import java.util.Objects;
 
-
 @Service("EmailService")
-@Profile("dev")
-public class EmailServiceImpl implements EmailService {
+@Profile("local")
+public class EmailServiceImplLocal implements EmailService{
 
     @Value("${email.sender}")
     private String NOREPLY_ADDRESS;
-
 
     @Autowired
     private JavaMailSender emailSender;
@@ -51,7 +48,7 @@ public class EmailServiceImpl implements EmailService {
     @Value("classpath:/mail-logo.png")
     private Resource resourceFile;
 
-    private static final Logger LOG = LoggerFactory.getLogger(EmailServiceImpl.class);
+    private static final Logger LOG = LoggerFactory.getLogger(EmailServiceImplLocal.class);
 
 
     public void sendSimpleMessage(String to, String subject, String text) {
@@ -91,22 +88,8 @@ public class EmailServiceImpl implements EmailService {
             helper.setSubject(subject);
             helper.setText(text);
 
-            S3Object s3object = amazonS3Client.getObject("s3roomreservation", "CartaMotivos.docx");
-            S3ObjectInputStream inputStream = s3object.getObjectContent();
-
-            File s3File = null;
-            try {
-                s3File = new File("."+File.separator+"CartaMotivos.docx");
-                FileUtils.copyInputStreamToFile(inputStream, s3File);
-            } catch (IOException e) {
-                 LOG.error("Cannot get object from s3! "+ e.getMessage());
-            }
-
-            if(Objects.nonNull(s3File)) {
-                LOG.info("Adding s3 object to mail!");
-                FileSystemResource file = new FileSystemResource(s3File);
-                helper.addAttachment("List of reservations.docx", file);
-            }
+            FileSystemResource file = new FileSystemResource(new File(pathToAttachment));
+            helper.addAttachment("List of reservations.docs", file);
 
             emailSender.send(message);
 
@@ -139,5 +122,6 @@ public class EmailServiceImpl implements EmailService {
         helper.addInline("attachment.png", resourceFile);
         emailSender.send(message);
     }
+
 
 }

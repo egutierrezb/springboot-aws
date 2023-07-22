@@ -1,5 +1,8 @@
 package com.booking.room.mail;
 
+import javax.mail.MessagingException;
+import java.util.Map;
+
 public interface EmailService {
     void sendSimpleMessage(String to,
                            String subject,
@@ -12,4 +15,8 @@ public interface EmailService {
                                    String subject,
                                    String text,
                                    String pathToAttachment);
+
+    void sendMessageUsingThymeleafTemplate(
+            String to, String subject, Map<String, Object> templateModel)
+            throws MessagingException;
 }
